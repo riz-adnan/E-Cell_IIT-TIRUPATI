@@ -1,44 +1,36 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+// const Event = require("./event.js");
+const passportLocalMongoose = require("passport-local-mongoose")
 
-const EventSchema = new Schema({
-   
-    title:{
-        type: String,
-        required: true
+const userSchema = new Schema({
+    name :{
+        type : String,
+        required : true
     },
-    description:{
-        type: String,
-        required: true, 
+    email :{
+        type : String,
+        required : true
     },
-    tag:{
-        type: String,
-        default: "General"
-    },
-    posterlink:{
-        type:String,
-        default: "..."
-    },
-    day:{
-        type:String,
-        default:"1"
-    },
-    month:{
-        type:String,
-        default:"Jan"
-    },
-    eventtime:{
-        type:String,
-        default:"05:00"
-    },
-    coordinator:{
-        type:String,
-        default:"The Statistics Club"
-    },
-    date:{
-        type: Date,
-        default: Date.now
-    },
-  });
+    // graduationYear :{
+    //     type : String,
+    //     required : true
+    // },
+    // phoneNo :{
+    //     type : Number,
+    //     required : true
+    // },
+    events : [{
+            type : Schema.Types.ObjectId,
+            ref : "Event"
+    }],
+    verified :{
+        type : Boolean,
+        default : false
+    }
+});
 
-  module.exports = mongoose.model('Event', EventSchema);
+
+userSchema.plugin(passportLocalMongoose);
+
+module.exports = mongoose.model("User", userSchema);
