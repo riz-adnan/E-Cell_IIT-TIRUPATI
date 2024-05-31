@@ -4,11 +4,12 @@ const crypto = require('crypto');
 
 const sendMail = async (req, res) => {
     // Setup Nodemailer
+    console.log("check pada hai yaha pe",req.body)
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'pandeyprakash98262@gmail.com',
-            pass: 'azxl cnkc gnoy utxg'
+            user: process.env.EMAIL_USER,
+            pass: process.env.GMAIL_PASSKEY
         }
     });
     // Generate confirmation code
@@ -20,7 +21,7 @@ const sendMail = async (req, res) => {
     const confirmations = {};
 
     // Route to send confirmation email
-    
+
         const { email } = req.body;
         console.log(email);
 
@@ -28,7 +29,7 @@ const sendMail = async (req, res) => {
         confirmations[email] = confirmationCode;
 
         let mailDetails = {
-            from: 'pandeyprakash98262@gmail.com',
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'Email-Verificaion',
             html: `Your confirmation code is: ${confirmationCode}`

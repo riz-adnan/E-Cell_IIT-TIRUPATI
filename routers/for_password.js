@@ -1,5 +1,5 @@
 const express = require("express");
-const frSendMail = require("../utils/fr-nodeMailer");
+const frSendMail = require("../utils/forgot_nodeMailer");
 const User = require("../model/user");
 const router = express.Router();
 

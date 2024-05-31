@@ -4,11 +4,12 @@ const crypto = require('crypto');
 
 const frSendMail = async (req, res) => {
     // Setup Nodemailer
+    console.log(process.env.GMAIL_PASSKEY)
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'pandeyprakash98262@gmail.com',
-            pass: 'azxl cnkc gnoy utxg'
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSKEY
         }
     });
     // Generate confirmation code
@@ -28,7 +29,7 @@ const frSendMail = async (req, res) => {
         confirmations[email] = confirmationCode;
 
         let mailDetails = {
-            from: 'pandeyprakash98262@gmail.com',
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'Email-Verificaion',
             html:  `<a href="http://localhost:8080/reset/username-password/${confirmationCode}">Reset-Password/username</a>`

@@ -1,3 +1,9 @@
+if(process.env.NODE_ENV != "production"){
+    require("dotenv").config();
+}
+console.log('NODE_ENV:', process.env.NODE_ENV);  // Should log the current NODE_ENV value
+console.log('ADMIN_SECRET:', process.env.ADMIN_SECRET);  // Should log the admin secret
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -6,14 +12,19 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User= require("./model/user.js");
 const session = require("express-session");
-const flash = require("connect-flash");
-const Expresserror = require("./utils/expressErr.js");
-const Event = require("./model/event.js")
+const Expresserror = require("./utils/expressError.js");
+const bodyParser = require('body-parser');
 
 const event = require("./routers/event.js");
 const user = require("./routers/user.js");
-const forgot = require("./routers/fr-password.js")
+const forgot = require("./routers/for_password.js")
+const admin = require("./routers/admin.js")
+const idea = require("./routers/idea.js")
+const ideaSuccessFull = require("./routers/ideaSuccess.js")
 
+app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "view"));
 app.use(express.urlencoded({ extended: true }));
@@ -52,7 +63,6 @@ main()
         }
     }
 app.use(session(sessionOption));
-app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -61,23 +71,6 @@ passport.use(new LocalStrategy(User.authenticate()));//for sighin and sighup
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-app.use((req,res,next) =>{
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    // res.locals.islogged = req.user;
-    // res.locals.curUser = req.user;
-    next();
-});
-// app.get("/demouser", async(req,res) =>{
-//     let user1= new User({
-//         name : "prakash",
-//         email : "abc@iit.ac.in",
-//         username : "abcdadsfg",
-//     });
-//     let regi_user= await User.register(user1, "password");
-//     res.send(regi_user);
-// })
 
 async function main() {
     await mongoose.connect('mongodb://127.0.0.1:27017/E-Cell');
@@ -89,10 +82,12 @@ app.get("", (req,res) =>{
 
 app.use("/event", event);
 app.use("/reset", forgot);
+app.use("/admin", admin);
+app.use("/user/idea", idea);
+app.use("/ideas", ideaSuccessFull);
 app.use("/", user);
 
-
-
+// ReactDOM.render(<Loginuser/>, document.getElementById('react-root'));
 app.all("*",(req,res,next) =>{
     next(new Expresserror(404,"Page Not Found!"));
 });

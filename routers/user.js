@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../model/user.js");
+const Event = require("../model/event.js");
 const passport = require("passport");
 const sendMail = require("../utils/nodeMailer.js");
+const { isloggedin } = require("../middleware.js");
 
 //*******User************/
 router.get("/login", (req, res) => {
+    console.log(req.user);
     if (!req.user) {
         res.render("./user/login.ejs");
     }
@@ -30,7 +33,7 @@ router.post("/login", passport.authenticate("local", {
 
 let confirmations = {};
 router.post("/signup", async (req, res) => {
-    console.log(req.user);
+    console.log(req.body);
     try {
         await User.deleteMany({ verified: false });
         if (!req.user) {
@@ -69,7 +72,7 @@ router.get("/logout", (req, res) => {
             if (e) {
                 return next(e);
             }
-            res.json({ status: 200, message: "logged out successfully!" });
+            else {res.json({ status: 200, message: "logged out successfully!" })};
         });
     }
     else {
@@ -97,5 +100,23 @@ router.post('/verify-confirmation-code', async (req, res) => {
         res.status(400).send('Invalid confirmation code');
     }
 });
+
+router.get("/event",isloggedin,async(req,res) =>{
+    res.json({"status" : 200, "message" : "rendering all events for user"})
+})
+
+router.get("/event/:id", isloggedin, (req,res) =>{
+    res.json({"status" : 200,"message" : "rendering particular event for user"})
+})
+
+router.post("/event/:eventid", isloggedin, (req,res) =>{
+    let userid = req.user._id;
+    let {eventid} = req.params;
+    let user = User.findById(userid);
+    let event = Event.findById(eventid);
+    user.events.push(eventid);
+    event.users.push(userid);
+    res.json({"status" : 200,"message" : "rendering particular event for user"})
+})
 
 module.exports = router;
