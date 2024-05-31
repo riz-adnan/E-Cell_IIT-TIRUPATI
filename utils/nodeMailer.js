@@ -1,8 +1,7 @@
-const express = require("express");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-const sendMail = async (req, res) => {
+const sendMail = async (req) => {
     // Setup Nodemailer
     console.log("check pada hai yaha pe",req.body)
     const transporter = nodemailer.createTransport({
@@ -34,7 +33,7 @@ const sendMail = async (req, res) => {
             subject: 'Email-Verificaion',
             html: `Your confirmation code is: ${confirmationCode}`
         }
-        transporter.sendMail(mailDetails, function (err, data) {
+        transporter.sendMail(mailDetails, function (err) {
             if (err) {
                 console.log('Error Occurs', err);
             } else {
